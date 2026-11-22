@@ -1,0 +1,141 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny all access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Blueprints ---
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'photoURL', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'email', 'photoURL', 'createdAt', 'updatedAt'])
+        && data.uid == request.auth.uid
+        && data.uid == userId
+        && isValidId(data.uid)
+        && data.displayName is string
+        && data.displayName.size() <= 120
+        && data.email is string
+        && data.email.size() >= 3
+        && data.email.size() <= 254
+        && data.photoURL is string
+        && data.photoURL.size() <= 40000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSnippet(data, userId, snippetId) {
+      return data.keys().hasAll(['id', 'ownerId', 'title', 'html', 'css', 'js', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'ownerId', 'title', 'html', 'css', 'js', 'mode', 'webTabs', 'python', 'createdAt', 'updatedAt'])
+        && data.id == snippetId
+        && isValidId(data.id)
+        && data.ownerId == request.auth.uid
+        && data.ownerId == userId
+        && isValidId(data.ownerId)
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 120
+        && data.html is string
+        && data.html.size() <= 200000
+        && data.css is string
+        && data.css.size() <= 200000
+        && data.js is string
+        && data.js.size() <= 200000
+        && (!('mode' in data) || (data.mode is string && data.mode in ['web', 'python']))
+        && (!('webTabs' in data) || (data.webTabs is list && data.webTabs.size() >= 1 && data.webTabs.size() <= 3 && data.webTabs.hasOnly(['html', 'css', 'js'])))
+        && (!('python' in data) || (data.python is string && data.python.size() <= 200000))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // --- Private User Profiles ---
+    match /users/{userId} {
+      allow get: if isVerified() && isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isVerified()
+        && isOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerified()
+        && isOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'photoURL', 'updatedAt']);
+
+      allow delete: if false;
+
+      // --- User's Private Code Snippets ---
+      match /snippets/{snippetId} {
+        allow get: if isVerified()
+          && isOwner(userId)
+          && isValidId(userId)
+          && isValidId(snippetId)
+          && existing().ownerId == request.auth.uid;
+
+        allow list: if isVerified()
+          && isOwner(userId)
+          && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerified()
+          && isOwner(userId)
+          && isValidId(userId)
+          && isValidId(snippetId)
+          && isValidSnippet(incoming(), userId, snippetId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+
+        allow update: if isVerified()
+          && isOwner(userId)
+          && isValidId(userId)
+          && isValidId(snippetId)
+          && isValidSnippet(incoming(), userId, snippetId)
+          && existing().ownerId == request.auth.uid
+          && incoming().id == existing().id
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'html', 'css', 'js', 'mode', 'webTabs', 'python', 'updatedAt']);
+
+        allow delete: if isVerified()
+          && isOwner(userId)
+          && isValidId(userId)
+          && isValidId(snippetId)
+          && existing().ownerId == request.auth.uid;
+      }
+    }
+  }
+}

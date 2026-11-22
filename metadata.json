@@ -1,0 +1,8 @@
+{
+  "name": "Traço — Editor HTML, CSS & JS",
+  "description": "Editor minimalista para escrever, armazenar e executar código HTML, CSS e JavaScript no navegador.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

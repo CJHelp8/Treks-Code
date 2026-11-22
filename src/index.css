@@ -1,0 +1,405 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-clean: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  code, pre, textarea.font-mono, .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .treks-code-mirror,
+  .treks-code-input {
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+    tab-size: 2;
+  }
+
+  .treks-code-input::selection {
+    background-color: var(--treks-editor-selection, rgba(59, 130, 246, 0.25));
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .treks-code-input::placeholder {
+    color: var(--treks-editor-placeholder, #a3a3a3);
+    -webkit-text-fill-color: var(--treks-editor-placeholder, #a3a3a3);
+    opacity: 1;
+  }
+}
+
+@keyframes treks-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes treks-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes treks-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes treks-modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes treks-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes treks-drawer-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes treks-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes treks-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes treks-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes treks-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+@keyframes treks-chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes treks-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes treks-tabbar-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes treks-tab-next-a {
+  from {
+    opacity: 0.35;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes treks-tab-next-b {
+  from {
+    opacity: 0.35;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes treks-tab-prev-a {
+  from {
+    opacity: 0.35;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes treks-tab-prev-b {
+  from {
+    opacity: 0.35;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes treks-mode-switch-a {
+  from {
+    opacity: 0.25;
+    transform: translateY(7px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes treks-mode-switch-b {
+  from {
+    opacity: 0.25;
+    transform: translateY(7px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes treks-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes treks-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes treks-collapse-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scaleY(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes treks-iframe-in {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.anim-backdrop-in {
+  animation: treks-fade-in 180ms var(--ease-out-expo) both;
+}
+
+.anim-backdrop-out {
+  animation: treks-fade-out 150ms ease-in both;
+}
+
+.anim-modal-in {
+  animation: treks-modal-in 210ms var(--ease-out-expo) both;
+}
+
+.anim-modal-out {
+  animation: treks-modal-out 150ms ease-in both;
+}
+
+.anim-drawer-in {
+  animation: treks-drawer-in 240ms var(--ease-out-expo) both;
+}
+
+.anim-drawer-out {
+  animation: treks-drawer-out 170ms ease-in both;
+}
+
+.anim-dropdown-in {
+  animation: treks-dropdown-in 170ms var(--ease-out-expo) both;
+}
+
+.anim-slide-down {
+  animation: treks-slide-down 180ms var(--ease-out-expo) both;
+}
+
+.anim-slide-up {
+  animation: treks-slide-up 180ms var(--ease-out-expo) both;
+}
+
+.anim-toast-out {
+  animation: treks-toast-out 150ms ease-in both;
+}
+
+.anim-chip-in {
+  animation: treks-chip-in 160ms var(--ease-out-expo) both;
+}
+
+.anim-page-in {
+  animation: treks-page-in 190ms var(--ease-out-expo) both;
+}
+
+.anim-tabbar-in {
+  animation: treks-tabbar-in 190ms var(--ease-out-expo) both;
+}
+
+.anim-tab-next-a {
+  animation: treks-tab-next-a 190ms var(--ease-out-expo) both;
+}
+
+.anim-tab-next-b {
+  animation: treks-tab-next-b 190ms var(--ease-out-expo) both;
+}
+
+.anim-tab-prev-a {
+  animation: treks-tab-prev-a 190ms var(--ease-out-expo) both;
+}
+
+.anim-tab-prev-b {
+  animation: treks-tab-prev-b 190ms var(--ease-out-expo) both;
+}
+
+.anim-mode-switch-a {
+  animation: treks-mode-switch-a 210ms var(--ease-out-expo) both;
+}
+
+.anim-mode-switch-b {
+  animation: treks-mode-switch-b 210ms var(--ease-out-expo) both;
+}
+
+.anim-content-in {
+  animation: treks-content-in 180ms var(--ease-out-expo) both;
+}
+
+.anim-pop-in {
+  animation: treks-pop-in 160ms var(--ease-out-expo) both;
+}
+
+.anim-collapse-in {
+  animation: treks-collapse-in 190ms var(--ease-out-expo) both;
+  transform-origin: top;
+}
+
+.anim-iframe-in {
+  animation: treks-iframe-in 160ms var(--ease-out-expo) both;
+}
+
+/* Subtle custom scrollbars for code editor and drawers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(115, 115, 115, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(115, 115, 115, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
